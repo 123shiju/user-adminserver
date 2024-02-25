@@ -51,10 +51,12 @@ const logoutAdmin = asyncHandler(async (req, res) => {
 });
 
 const listUserProfile = asyncHandler(async (req, res) => {
-
-  const userList = await User.find({isAdmin:false});
+  const userList = await User.find({ isAdmin: false });
   res.status(200).json(userList);
 });
+
+
+
 
 const editUserProfile = asyncHandler(async (req, res) => {
   const { userId, name, email } = req.body;

@@ -2,6 +2,7 @@ import express from 'express'
 import  dotenv from 'dotenv'
 import userRoutes from './routes/userRoute.js'
 import adminRoutes from "./routes/adminRoute.js";
+import formRoutes from './routes/UserformRoute.js';
 dotenv.config();
 import cookieParser from 'cookie-parser';
 import { notFound,erroHandler } from './middleware/errorMiddleware.js';
@@ -17,7 +18,7 @@ connectDB();
 const app=express()
 
 const corsOptions = {
-    origin: ["http://localhost:5000", "http://127.0.0.1:3000"],
+  origin: ["http://localhost:5000", "http://localhost:3000", "http://127.0.0.1:3000"],
     credentials: true,
   };
   
@@ -29,6 +30,7 @@ app.use(cookieParser())
 
 app.use('/api/users',userRoutes)
 app.use("/api/admin", adminRoutes);
+app.use('/api/forms', formRoutes)
 
 app.get('/',(req,res)=>res.send('server is ready'));
 
