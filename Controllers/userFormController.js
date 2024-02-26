@@ -4,23 +4,75 @@ import Form from '../models/FormModel.js'
 
 
 
-const submitform=asynchandler(async(req,res)=>{
-    try {
-        const { title , fields }=req.body
-    
-        const userId=req.user._id
+import asyncHandler from 'express-async-handler';
 
-        if(!title || !fields || fields.length===0){
-            return res.status(400).json({message:'title and fields are required'})
-        }
-        const newForm=new Form({userId,title,fields})
-        await newForm.save()
-        res.status(201).json(newForm)
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({message:'Internal Server Error'})
+const submitform = asyncHandler(async (req, res) => {
+  try {
+    const { title, fields } = req.body;
+    console.log('Incoming fields:', fields);
+
+    const userId = req.user._id;
+
+    if (!title || !fields || fields.length === 0) {
+      return res.status(400).json({ message: 'title and fields are required' });
     }
-})
+
+    // Map fields to create an array of fields with the new structure
+    const formattedFields = fields.map(field => {
+      const options = field.options.map(option => {
+        // If the option is a string, convert it to the expected object format
+        if (typeof option === 'string') {
+          return {
+            value: option,
+            isDefault: false,
+          };
+        }
+
+        // If the option is an object, use the existing logic
+        if (!option.value) {
+          // Handle the case where 'value' is missing in the request payload
+          throw new Error('Option value is required');
+        }
+
+        return {
+          value: option.value,
+          isDefault: option.isDefault || false,
+        };
+      });
+
+      return {
+        label: field.label,
+        type: field.type,
+        options,
+        placeholder: field.placeholder || '',
+      };
+    });
+
+    // Create a new form using the Form model
+    const newForm = new Form({
+      userId,
+      title,
+      fields: formattedFields,
+    });
+
+    // Save the new form to the database
+    await newForm.save();
+
+    res.status(201).json(newForm);
+  } catch (error) {
+    console.error(error);
+
+    if (error.message === 'Option value is required') {
+      return res.status(400).json({ message: 'Option value is required' });
+    }
+
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+
+
+
 
 const getForms = async (req, res) => {
     try {

@@ -1,35 +1,48 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose';
 
-const formSchema=new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-    title:{
-        type:String,
-        required:true,
-    },
-    fields:[{
-        label:{
-            type:String,
-            required:true,
-        },
-        type:{
-            type:String,
-            enum:['text','dropdown','radio','multichoice'],
-            required:true,
-        },
-        options:[{
-            type:String,
-        }],
-        placeholder:{
-            type:String,
-            default:'',
-        },
-    }],
-})
+const { Schema } = mongoose;
 
-const Form=mongoose.model('Form',formSchema)
+const optionSchema = new Schema({
+  value: {
+    type: String,
+    required: true,
+  },
+  isDefault: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-export default Form
+const fieldSchema = new Schema({
+  label: {
+    type: String,
+    required: true,
+  },
+  type: {
+    type: String,
+    enum: ['text', 'dropdown', 'radio', 'multichoice'],
+    required: true,
+  },
+  options: [optionSchema],
+  placeholder: {
+    type: String,
+    default: '',
+  },
+});
+
+const formSchema = new Schema({
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  fields: [fieldSchema],
+});
+
+const Form = mongoose.model('Form', formSchema);
+
+export default Form;
