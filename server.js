@@ -31,8 +31,12 @@ app.use(cookieParser())
 app.use('/api/users',userRoutes)
 app.use("/api/admin", adminRoutes);
 app.use('/api/forms', formRoutes)
+app.use('/',(req,res)=>{
+  res.send("welcome to my backend server side")
+})
 
 app.get('/',(req,res)=>res.send('server is ready'));
+
 
 
 
